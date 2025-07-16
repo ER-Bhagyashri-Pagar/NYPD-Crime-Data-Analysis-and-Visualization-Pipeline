@@ -1,0 +1,146 @@
+--
+-- ER/Studio Data Architect SQL Code Generation
+-- Project :      Bhagyashri_Pagar_Individual_Project_Dimensional_Model.DM1
+--
+-- Date Created : Thursday, February 13, 2025 22:49:29
+-- Target DBMS : Snowflake
+--
+
+-- 
+-- TABLE: DIM_CRIME 
+--
+
+CREATE TABLE DIM_CRIME(
+    Crime_SK            NUMBER(10, 0)    NOT NULL,
+    ARREST_KEY          NUMBER(30, 0)    NOT NULL,
+    LAW_CODE            VARCHAR(20)      NOT NULL,
+    KY_CD               NUMBER(3, 0)     NOT NULL,
+    OFNS_DESC           VARCHAR(100)     NOT NULL,
+    PD_DESC             VARCHAR(50)      NOT NULL,
+    PD_CD               NUMBER(3, 0)     NOT NULL,
+    LAW_CAT_CD          VARCHAR(10)      NOT NULL,
+    CRIME_DK            NUMBER(10, 0)    NOT NULL,
+    EFFECTIVE_DATE      DATE             NOT NULL,
+    INEFFECTIVE_DATE    DATE             NOT NULL,
+    IS_CURRENT          NUMBER(2, 0),
+    DI_JOB_ID           NUMBER(20, 0)    NOT NULL,
+    DI_LOAD_DT          DATE,
+    CONSTRAINT PK_CRIME_SK PRIMARY KEY (Crime_SK) 
+)
+;
+
+
+
+-- 
+-- TABLE: DIM_DATE 
+--
+
+CREATE TABLE DIM_DATE(
+    DATE_SK          NUMBER(10, 0)    NOT NULL,
+    DATE             DATE             NOT NULL,
+    DAY_NAME         VARCHAR(10),
+    DAY_ABBR         VARCHAR(3),
+    DAY_NUMBER       NUMBER(2, 0),
+    WEEK_NUMBER      NUMBER(10, 0),
+    MONTH_NAME       VARCHAR(20),
+    MONTH_ABBR       VARCHAR(5),
+    MONTH_NUMBER     NUMBER(2, 0),
+    QUATER_NUMBER    NUMBER(2, 0),
+    YEAR             NUMBER(4, 0),
+    IS_WEEKEND       NUMBER(2, 0),
+    DI_JOB_ID        NUMBER(20, 0)    NOT NULL,
+    DI_LOAD_DT       DATE             NOT NULL,
+    CONSTRAINT PK_DATE_SK PRIMARY KEY (DATE_SK) 
+)
+;
+
+
+
+-- 
+-- TABLE: DIM_LOCATION 
+--
+
+CREATE TABLE DIM_LOCATION(
+    LOCATION_SK          NUMBER(10, 0)     NOT NULL,
+    ARREST_PRECINCT      NUMBER(10, 0)     NOT NULL,
+    ARREST_BORO          VARCHAR(20)       NOT NULL,
+    JURISDICTION_CODE    NUMBER(2, 0)      NOT NULL,
+    LATITUDE             DECIMAL(20, 0)    NOT NULL,
+    LONGITUDE            DECIMAL(20, 0)    NOT NULL,
+    X_COORD              NUMBER(20, 0)     NOT NULL,
+    Y_COORD              NUMBER(10, 0)     NOT NULL,
+    LOC_DK               NUMBER(10, 0)     NOT NULL,
+    IS_CURRENT           NUMBER(2, 0)      NOT NULL,
+    EFFECTIVE_DATE       DATE              NOT NULL,
+    INEFFECTIVE_DATE     DATE              NOT NULL,
+    DI_JOB_ID            NUMBER(20, 0)     NOT NULL,
+    DI_LOAD_DT           DATE              NOT NULL,
+    CONSTRAINT PK_LOCATION_SK PRIMARY KEY (LOCATION_SK) 
+)
+;
+
+
+
+-- 
+-- TABLE: DIM_PERP 
+--
+
+CREATE TABLE DIM_PERP(
+    PERP_SK       CHAR(10)         NOT NULL,
+    AGE_GROUP     VARCHAR(10),
+    PERP_SEX      VARCHAR(2)       NOT NULL,
+    PERP_RACE     VARCHAR(15),
+    DI_JOB_ID     NUMBER(20, 0)    NOT NULL,
+    DI_LOAD_DT    DATE             NOT NULL,
+    CONSTRAINT PK_PERP_SK PRIMARY KEY (PERP_SK) 
+)
+;
+
+
+
+-- 
+-- TABLE: FACT_ARREST 
+--
+
+CREATE TABLE FACT_ARREST(
+    ARREST_SK            NUMBER(10, 0)    NOT NULL,
+    ARREST_COUNT         NUMBER(4, 0),
+    FELONY_COUNT         NUMBER(10, 0),
+    MISDEMEANOR_COUNT    NUMBER(10, 0),
+    DI_JOB_ID            NUMBER(20, 0),
+    DI_LOAD_DT           DATE,
+    DATE_SK              NUMBER(10, 0)    NOT NULL,
+    LOCATION_SK          NUMBER(10, 0)    NOT NULL,
+    PERP_SK              CHAR(10)         NOT NULL,
+    Crime_SK             NUMBER(10, 0)    NOT NULL,
+    CONSTRAINT PK_FACT_ARREST_SK PRIMARY KEY (ARREST_SK) 
+)
+;
+
+
+
+-- 
+-- TABLE: FACT_ARREST 
+--
+
+ALTER TABLE FACT_ARREST ADD CONSTRAINT RefDIM_DATE12 
+    FOREIGN KEY (DATE_SK)
+    REFERENCES DIM_DATE(DATE_SK)
+;
+
+ALTER TABLE FACT_ARREST ADD CONSTRAINT RefDIM_LOCATION13 
+    FOREIGN KEY (LOCATION_SK)
+    REFERENCES DIM_LOCATION(LOCATION_SK)
+;
+
+ALTER TABLE FACT_ARREST ADD CONSTRAINT RefDIM_PERP14 
+    FOREIGN KEY (PERP_SK)
+    REFERENCES DIM_PERP(PERP_SK)
+;
+
+ALTER TABLE FACT_ARREST ADD CONSTRAINT RefDIM_CRIME15 
+    FOREIGN KEY (Crime_SK)
+    REFERENCES DIM_CRIME(Crime_SK)
+;
+
+
